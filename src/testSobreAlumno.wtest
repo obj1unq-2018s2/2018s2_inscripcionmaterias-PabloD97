@@ -1,0 +1,87 @@
+import inscripcionAMaterias.*
+
+describe "test"{
+	
+	var programacion = new Carrera()
+	
+	var elementosDeProgramacion= new  MateriaNoPideNada(
+		cupo= 50,
+		anio= 1,
+		carrera = programacion,
+		inscriptos=[],
+		listaDeEspera=[]
+	)
+	
+	var objetos1= new MateriaQuePideCorrelativas(
+		cupo= 50,
+		carrera = programacion,
+		anio= 1,
+		inscriptos=[],
+		listaDeEspera=[],
+		materiasCorrelativas=[elementosDeProgramacion]
+	)
+	
+	var objetos2= new MateriaPideMateriasDeAniosAnteriores(
+		cupo= 50,
+		anio= 2,
+		carrera = programacion,
+		inscriptos=[],
+		listaDeEspera=[]
+	)
+	
+	
+	
+	var alum= new  Estudiante(
+		notasDeMaterias=[],
+		perteneceACarreras =[programacion],
+		aprobadas=[],
+		creditos=0
+	)
+	
+	var aproboElementos= new Aprobo(
+		nota=7,
+		materia=elementosDeProgramacion
+	)
+	
+	fixture{
+		programacion.materias([ elementosDeProgramacion,objetos2,objetos1 ])
+	}
+	
+	
+
+	//1
+	test " alumno puede cursar"{
+		assert.that( universidad.alumnoPuedeCursar(alum,elementosDeProgramacion) )
+	}
+	
+	test "alumno no puede cursar1"{
+		assert.that(not universidad.alumnoPuedeCursar(alum,objetos1 ) )
+	}
+
+	//2
+	test " alumno aprobo elementos"{
+		universidad.registrarMateriaAprobada(
+			alum,aproboElementos,elementosDeProgramacion
+		)
+		assert.equals( [aproboElementos], alum.notasDeMaterias())
+	}
+	
+	//3
+	test "inscribir alumno"{
+		assert.that(universidad.alumnoPuedeInscribirse(alum, elementosDeProgramacion))
+		universidad.inscribirAlumno(alum,elementosDeProgramacion)
+		assert.equals( [alum], elementosDeProgramacion.inscriptos() )
+	}
+	
+}
+
+	
+
+
+
+
+
+
+
+
+
