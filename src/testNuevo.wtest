@@ -1,0 +1,138 @@
+import empiezoDeNuevo.*
+
+describe "arrancamos de 0"{
+	
+	var programacion= new Carrera(
+		materias=[]
+	)
+	
+	var alumno =  new Alumno(
+		carreras= [programacion],
+		materiasAprobadas=[],
+		creditos= 250,
+		inscriptoEn=[],
+		esperaVacanteEn=[]
+	)
+	
+	var elementos = new MateriaNoPideNada(
+		perteneceACarrera=programacion,
+		inscriptos=[],
+		anio= 1,
+		cupo= 50,
+		listaDeEspera=[]
+	)
+	
+	var intro= new MateriaPideCorrelativas(
+		correlativas=[elementos],
+		perteneceACarrera=programacion,
+		inscriptos=[],
+		anio=1,
+		cupo= 50,
+		listaDeEspera=[]
+	)
+
+	var tesis= new MateriaRequiereCreditos(
+		perteneceACarrera=programacion,
+		inscriptos=[],
+		creditosNecesarios= 150,
+		anio=4,
+		cupo= 1,
+		listaDeEspera=[]
+	)
+	
+	var objetos1 = new MateriaPideAniosAnteriores(
+		perteneceACarrera=programacion,
+		inscriptos=[],
+		anio=2,
+		cupo= 50,
+		listaDeEspera=[]
+	)
+	
+	var aproboElementosCon7 = new MateriaAprobada(
+		nota= 7,
+		materia= elementos
+	)
+	
+
+	
+	fixture {
+		programacion.materias().add(elementos)
+		programacion.materias().add(intro)
+		programacion.materias().add(objetos1)
+	}
+	
+	//1
+	test "alumno puede cursar materia que no pide nada"{
+		assert.that( universidad.puedeCursar(alumno,elementos) )
+	}
+	
+	test "alumno puede cursar  materia que pide correlativa"{
+		alumno.materiasAprobadas().add(elementos)
+		assert.that( universidad.puedeCursar(alumno,intro) )
+	}
+	
+	test "alumno puede cursar materia que pide creditos"{
+		assert.that( universidad.puedeCursar(alumno,tesis) )
+	}
+	
+	test "alumno puede cursar materia que piede todas las de años anteriores"{
+		alumno.materiasAprobadas().add(elementos)
+		alumno.materiasAprobadas().add(intro)
+		assert.that( universidad.puedeCursar(alumno,objetos1) )
+	}
+	
+	//2
+	test "alumno aprobo materia"{
+		universidad.aproboMateria(alumno,aproboElementosCon7)
+		assert.equals([elementos], alumno.materiasAprobadas())
+	}
+	//3
+	test "alumno puede inscribirse"{
+		assert.that( universidad.alumnoPuedeInscribirse(alumno,elementos) )
+		universidad.inscribirAlumno(alumno,elementos)
+		assert.equals( [alumno], elementos.inscriptos() )
+	}
+	
+	//4
+	test "sacar  alumno"{
+		
+		universidad.darDeBaja(alumno,elementos)
+		assert.equals([], elementos.inscriptos())
+	}
+	
+	//6
+	test "materias en las que se puede inscribir"{
+		assert.equals([elementos], universidad.materiasEnLasQueSePuedeAnotar(alumno,programacion))
+	}
+	
+	test "esta inscripto en "{
+		universidad.inscribirAlumno(alumno,elementos)
+		assert.equals([elementos], universidad.materiasDe(alumno) )
+	}
+	
+	test "esta en lista de espera"{
+		elementos.cupo(0) 
+		universidad.inscribirAlumno(alumno,elementos)
+		assert.equals([alumno], elementos.listaDeEspera())
+		assert.equals( [elementos], alumno.esperaVacanteEn() )
+	}
+	
+	//7
+	test "alumno ya curso esta materia "{
+		universidad.aproboMateria(alumno,aproboElementosCon7)
+		assert.that(not universidad.puedeCursar(alumno,elementos) )
+	}
+	
+	test "rechazar alumno"{
+		assert.that(not universidad.puedeCursar(alumno,intro) )
+	}
+	
+	test "alumno va derecho a lista de espera"{
+		elementos.cupo(0) 
+		universidad.inscribirAlumno(alumno,elementos)
+		assert.equals([alumno], elementos.listaDeEspera())
+	}
+}
+
+
+
