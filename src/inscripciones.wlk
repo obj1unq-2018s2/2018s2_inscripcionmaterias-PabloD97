@@ -1,6 +1,6 @@
 
 class MateriaAprobada{
-	var nota
+	var property nota
 	var property materia
 }
 
@@ -14,10 +14,14 @@ class Alumno{
 
 	var property inscriptoEn
 	
+	var property notas
+	
 	var property esperaVacanteEn
 	
 	method aprobo(terminada){
 		materiasAprobadas.add(terminada.materia() )
+		creditos += terminada.materia().creditos()
+		notas.add(terminada.nota() )
 	}
 }
 
@@ -30,6 +34,8 @@ class MateriaNoPideNada {
 	var property anio
 	
 	var property cupo
+	
+	var property creditos
 	
 	var property listaDeEspera
 	
@@ -118,10 +124,8 @@ object  universidad{
 	}
 	//2
 	method aproboMateria(alumno,materiaAprobada){
-		var contador= 0
-		if( contador <= 0 ){
-			contador = 1
-			return alumno.aprobo(materiaAprobada) 
+		if(not alumno.materiasAprobadas().contains(materiaAprobada.materia())){
+			 alumno.aprobo(materiaAprobada) 
 		}
 		else {
 			 self.error("no se puede anotar 2 veces la nota")

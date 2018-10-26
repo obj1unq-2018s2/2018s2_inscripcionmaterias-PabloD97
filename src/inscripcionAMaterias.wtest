@@ -1,6 +1,6 @@
-import empiezoDeNuevo.*
+import inscripciones.*
 
-describe "arrancamos de 0"{
+describe "Inscripción a materias"{
 	
 	var programacion= new Carrera(
 		materias=[]
@@ -9,8 +9,9 @@ describe "arrancamos de 0"{
 	var alumno =  new Alumno(
 		carreras= [programacion],
 		materiasAprobadas=[],
-		creditos= 250,
+		creditos= 0,
 		inscriptoEn=[],
+		notas = [],
 		esperaVacanteEn=[]
 	)
 	
@@ -19,6 +20,7 @@ describe "arrancamos de 0"{
 		inscriptos=[],
 		anio= 1,
 		cupo= 50,
+		creditos= 10,
 		listaDeEspera=[]
 	)
 	
@@ -28,15 +30,17 @@ describe "arrancamos de 0"{
 		inscriptos=[],
 		anio=1,
 		cupo= 50,
+		creditos= 15,
 		listaDeEspera=[]
 	)
 
 	var tesis= new MateriaRequiereCreditos(
 		perteneceACarrera=programacion,
 		inscriptos=[],
-		creditosNecesarios= 150,
+		creditosNecesarios= 45,
 		anio=4,
 		cupo= 1,
+		creditos= 0,
 		listaDeEspera=[]
 	)
 	
@@ -45,6 +49,7 @@ describe "arrancamos de 0"{
 		inscriptos=[],
 		anio=2,
 		cupo= 50,
+		creditos= 25,
 		listaDeEspera=[]
 	)
 	
@@ -53,7 +58,16 @@ describe "arrancamos de 0"{
 		materia= elementos
 	)
 	
+	var aproboIntroCon5 = new MateriaAprobada(
+		nota= 5,
+		materia= intro
+	)
 
+	var aproboObjetos1Con8 = new MateriaAprobada(
+		nota= 8,
+		materia= objetos1
+	)
+	
 	
 	fixture {
 		programacion.materias().add(elementos)
@@ -67,17 +81,20 @@ describe "arrancamos de 0"{
 	}
 	
 	test "alumno puede cursar  materia que pide correlativa"{
-		alumno.materiasAprobadas().add(elementos)
+		universidad.aproboMateria(alumno,aproboElementosCon7)
 		assert.that( universidad.puedeCursar(alumno,intro) )
 	}
 	
 	test "alumno puede cursar materia que pide creditos"{
+		universidad.aproboMateria(alumno,aproboElementosCon7)
+		universidad.aproboMateria(alumno,aproboIntroCon5)
+		universidad.aproboMateria(alumno,aproboObjetos1Con8)
 		assert.that( universidad.puedeCursar(alumno,tesis) )
 	}
 	
 	test "alumno puede cursar materia que piede todas las de años anteriores"{
-		alumno.materiasAprobadas().add(elementos)
-		alumno.materiasAprobadas().add(intro)
+		universidad.aproboMateria(alumno,aproboElementosCon7)
+		universidad.aproboMateria(alumno,aproboIntroCon5)
 		assert.that( universidad.puedeCursar(alumno,objetos1) )
 	}
 	
